@@ -134,7 +134,7 @@ response = requests.get(url)
 # Verificar si la descarga fue exitosa
 if response.status_code == 200:
     # Usar BytesIO para leer el archivo Excel desde la respuesta
-    df = pd.read_excel(BytesIO(response.content), sheet_name='Fondos_P',  engine="openpyxl")
+    df = pd.read_excel(BytesIO(response.content), sheet_name="Fondos_P",  engine="openpyxl")
     st.write("¡Archivo cargado correctamente!")
 else:
     st.error("Hubo un problema al descargar el archivo desde Google Drive.")
