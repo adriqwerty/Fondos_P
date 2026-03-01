@@ -126,8 +126,8 @@ def obtener_precio_y_fecha(isin):
         return None, None
 
 # Enlace de Google Drive (enlace directo de descarga)
-url = 'https://drive.google.com/uc?export=download&id=18zva1x4v5UCxamu9qbV97EVA6DbZAOzb'  # Cambia este ID por el tuyo
-
+#url = 'https://drive.google.com/uc?export=download&id=18zva1x4v5UCxamu9qbV97EVA6DbZAOzb'  # Cambia este ID por el tuyo
+url = 'https://drive.google.com/uc?export=download&id=11V5AfCPMMcBErmLK4NrhxBwfc0KaNl_kz' 
 # Descargar el archivo Excel desde Google Drive
 response = requests.get(url)
 
