@@ -10,7 +10,7 @@ from datetime import datetime
 import io
 
 # Configuración de página
-st.set_page_config(page_title="Fondos de Inversión P", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Fondos de Inversión", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
     <style>
@@ -46,7 +46,12 @@ def obtener_url_alternativa(isin):
         "ES0140072028": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0140072028:EUR",
         "LU0625737910": "https://markets.ft.com/data/funds/tearsheet/historical?s=LU0625737910:EUR",
         "LU3038481936": "https://markets.ft.com/data/funds/tearsheet/historical?s=LU3038481936:EUR",
-        "ES0165243025": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0165243025:EUR"
+        "ES0165243025": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0165243025:EUR",
+        "IE00BH6XSF26": "https://markets.ft.com/data/funds/tearsheet/historical?s=IE00BH6XSF26:EUR",
+        "ES0112611001": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0112611001:EUR",
+        "ES0116567035": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0116567035:EUR",
+        "LU1112771503": "https://markets.ft.com/data/funds/tearsheet/historical?s=LU1112771503:EUR",
+        "ES0146309002": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0146309002:EUR"
     }
     return urls.get(isin)
 def obtener_url_morningstar(isin):
@@ -68,7 +73,10 @@ def obtener_precio_y_fecha_alt(isin):
     if not precio_box:
         print(f"⚠️ No se encontró el precio para {isin} en FT.")
         return None, None
-    precio=float(precio_box.text.strip())
+    precio_str = precio_box.text.strip()
+    precio_str = precio_str.replace(',', '')  # elimina separador de miles
+    precio = float(precio_str)
+    #precio=float(precio_box.text.strip())
     fecha_box = soup.find('div', class_='mod-disclaimer')
     match = re.search(r'as of ([A-Za-z]+ \d{1,2} \d{4})', fecha_box.text.strip())
     fecha_str = match.group(1)
@@ -127,14 +135,16 @@ def obtener_precio_y_fecha(isin):
 
 # Enlace de Google Drive (enlace directo de descarga)
 url = 'https://drive.google.com/uc?export=download&id=18zva1x4v5UCxamu9qbV97EVA6DbZAOzb'  # Cambia este ID por el tuyo
-#url = 'https://drive.google.com/uc?export=download&id=11V5AfCPMMcBErmLK4NrhxBwfc0KaNl_kz' 
+
 # Descargar el archivo Excel desde Google Drive
 response = requests.get(url)
 
 # Verificar si la descarga fue exitosa
 if response.status_code == 200:
     # Usar BytesIO para leer el archivo Excel desde la respuesta
-    df = pd.read_excel(BytesIO(response.content), sheet_name="Fondos_P",  engine="openpyxl")
+   # df = pd.read_excel(BytesIO(response.content), engine="openpyxl")
+    #df = pd.read_excel(BytesIO(response.content),sheet_name="Fondos_M", engine="openpyxl")
+    df = pd.read_excel(BytesIO(response.content),sheet_name="Fondos_P", engine="openpyxl")
     st.write("¡Archivo cargado correctamente!")
 else:
     st.error("Hubo un problema al descargar el archivo desde Google Drive.")
@@ -162,7 +172,12 @@ isin_map = {
         "Abaco Renta Fija": "ES0140072028",
         "Pictet China": "LU0625737910",
         "Hamco": "LU3038481936",
-        "MyInvestor Value":"ES0165243025"
+        "MyInvestor Value":"ES0165243025",
+        "Heptagon": "IE00BH6XSF26",
+        "AZValor": "ES0112611001",
+        "CartesioX": "ES0116567035",
+        "Helium": "LU1112771503",
+        "Horos": "ES0146309002"
 }
 
 
@@ -468,14 +483,19 @@ elif opcion_seleccionada == "Total de la Inversión":
             resumen_total.loc[resumen_total['Fondo'] == fondo,'Fecha Precio'] = fecha_fondo.strftime("%d/%m/%Y")
     orden_fondos = [
     "MSCI World",
-    "Abaco Renta Fija",
     "Cobas",
-    "Dunas",
-    "Evercapital",
-    "MyInvestor Value",
+    "Horos",
+    "AZValor",
     "Hamco",
+    "Heptagon",
     "Emerging Markets",
-    "Pictet China"
+    "Pictet China",
+    "MyInvestor Value",
+    "Evercapital",
+    "Abaco Renta Fija",
+    "Dunas",
+    "Helium",
+    "CartesioX"
     ]
 
     resumen_total['Fondo'] = pd.Categorical(
@@ -504,9 +524,9 @@ elif opcion_seleccionada == "Total de la Inversión":
         }) \
         .set_properties(**{'text-align': 'center', 'font-weight': 'bold'})
 
-
+    altura_tabla = 37* len(resumen_total) +10
     # Mostrar la tabla
-    st.dataframe(styled_resumen, use_container_width=True, hide_index=True)
+    st.dataframe(styled_resumen, use_container_width=True, hide_index=True,height=altura_tabla )
     fig_rendimiento = px.bar(resumen_total,
                                  x='Fondo',
                                  y='Rendimiento (%)',
@@ -515,7 +535,8 @@ elif opcion_seleccionada == "Total de la Inversión":
                                  labels={'Rendimiento (%)': 'Rendimiento (%)'},
                                  title="📊 Rendimiento por Fondo",
                                  template="plotly_dark",  # Estilo oscuro para un diseño más moderno
-                                 height=500)  # Mejorar el tamaño del gráfico
+                                 height=800) # Mejorar el tamaño del gráfico
+                            
 
     # Asegurar formato datetime
     df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
@@ -650,6 +671,26 @@ elif opcion_seleccionada == "Total de la Inversión":
         use_container_width=True,
         hide_index=True
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
