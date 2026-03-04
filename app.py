@@ -486,6 +486,7 @@ elif opcion_seleccionada == "Total de la Inversión":
     orden_fondos = [
     "MSCI World",
     "Cobas",
+    "Cobas L",
     "Horos",
     "AZValor",
     "Hamco",
