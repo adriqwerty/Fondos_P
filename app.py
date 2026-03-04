@@ -51,6 +51,7 @@ def obtener_url_alternativa(isin):
         "ES0112611001": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0112611001:EUR",
         "ES0116567035": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0116567035:EUR",
         "LU1112771503": "https://markets.ft.com/data/funds/tearsheet/historical?s=LU1112771503:EUR",
+        "LU1598719752": "https://markets.ft.com/data/funds/tearsheet/historical?s=LU1598719752:EUR",
         "ES0146309002": "https://markets.ft.com/data/funds/tearsheet/historical?s=ES0146309002:EUR"
     }
     return urls.get(isin)
@@ -177,6 +178,7 @@ isin_map = {
         "AZValor": "ES0112611001",
         "CartesioX": "ES0116567035",
         "Helium": "LU1112771503",
+        "Cobas L":"LU1598719752",
         "Horos": "ES0146309002"
 }
 
